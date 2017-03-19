@@ -300,10 +300,16 @@ export default class ViewTransformer extends React.Component {
     console.log('performDoubleTapUp...pivot=' + pivotX + ', ' + pivotY);
     let curScale = this.state.scale;
     let scaleBy;
-    if (curScale > (1 + this.props.maxScale) / 2) {
+    if (curScale != 1 ) {
       scaleBy = 1 / curScale;
     } else {
-      scaleBy = this.props.maxScale / curScale;
+      let viewAspectRatio = this.props.contentAspectRatio;
+      let viewPortRect = this.viewPortRect();
+      let viewPortAspectRatio = viewPortRect.width() / viewPortRect.height();
+
+      // Zoom to adjust aspect ratio
+      let aspectRatioRelation = viewPortAspectRatio / viewAspectRatio;
+      scaleBy = (aspectRatioRelation > 1.0 ? aspectRatioRelation : 1.0 / aspectRatioRelation);
     }
 
     let rect = transformedRect(this.transformedContentRect(), new Transform(
